@@ -83,7 +83,7 @@ namespace osu.Game.Tournament.Screens.Editors
                 {
                     new Box
                     {
-                        Colour = OsuColour.Gray(0.1f),
+                        Colour = Colour4.Black,
                         RelativeSizeAxes = Axes.Both,
                     },
                     drawableContainer = new Container
@@ -199,28 +199,36 @@ namespace osu.Game.Tournament.Screens.Editors
 
                 public void CreateNew()
                 {
-                    var user = new User();
+                    var user = new UserWithDiscord();
                     team.Players.Add(user);
+                    user.DiscordInfo = new DiscordUser();
                     flow.Add(new PlayerRow(team, user));
                 }
 
                 public class PlayerRow : CompositeDrawable
                 {
-                    private readonly User user;
+                    private readonly UserWithDiscord user;
 
                     [Resolved]
                     protected IAPIProvider API { get; private set; }
 
                     [Resolved]
+                    protected DiscordAPI discordAPI { get; private set; }
+
+                    [Resolved]
                     private TournamentGameBase game { get; set; }
 
                     private readonly Bindable<int?> userId = new Bindable<int?>();
+                    private readonly Bindable<string> discordId = new Bindable<string>();
 
                     private readonly Container drawableContainer;
 
-                    public PlayerRow(TournamentTeam team, User user)
+                    public PlayerRow(TournamentTeam team, UserWithDiscord user)
                     {
                         this.user = user;
+
+                        userId.Disabled = false;
+                        discordId.Disabled = false;
 
                         Margin = new MarginPadding(10);
 
@@ -248,10 +256,17 @@ namespace osu.Game.Tournament.Screens.Editors
                                 {
                                     new SettingsNumberBox
                                     {
-                                        LabelText = "User ID",
+                                        LabelText = "Osu ID",
                                         RelativeSizeAxes = Axes.None,
                                         Width = 200,
                                         Current = userId,
+                                    },
+                                    new SettingsBigNumberBox
+                                    {
+                                        LabelText = "Discord ID",
+                                        RelativeSizeAxes = Axes.None,
+                                        Width = 300,
+                                        Current = discordId,
                                     },
                                     drawableContainer = new Container
                                     {
@@ -279,6 +294,32 @@ namespace osu.Game.Tournament.Screens.Editors
                     private void load()
                     {
                         userId.Value = user.Id;
+
+                        if (user.DiscordInfo == null)
+                            user.DiscordInfo = new DiscordUser();
+
+                        discordId.Value = user.DiscordInfo.Id;
+
+                        API.LocalUser.BindValueChanged(e => userId.Disabled = e.NewValue.Id <= 1, true);
+                        discordAPI.Ready.BindValueChanged(e => discordId.Disabled = !e.NewValue, true);
+
+                        discordId.BindValueChanged(id =>
+                        {
+                            user.DiscordInfo.Id = id.NewValue ?? "0";
+
+                            if (id.NewValue != id.OldValue)
+                                user.DiscordInfo.Username = string.Empty;
+
+                            if (!string.IsNullOrEmpty(user.DiscordInfo.Username))
+                            {
+                                updatePanel();
+                                return;
+                            }
+
+                            var res = game.PopulateDiscordUser(user, "Bot " + discordAPI.Token.Value);
+                            if (res)
+                                updatePanel();
+                        });
                         userId.BindValueChanged(id =>
                         {
                             user.Id = id.NewValue ?? 0;

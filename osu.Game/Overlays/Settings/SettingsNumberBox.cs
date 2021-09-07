@@ -5,12 +5,21 @@ using osu.Framework.Bindables;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
 using osu.Framework.Graphics.UserInterface;
+using osu.Game.Graphics;
+using osu.Game.Graphics.Sprites;
 
 namespace osu.Game.Overlays.Settings
 {
     public class SettingsNumberBox : SettingsItem<int?>
     {
-        protected override Drawable CreateControl() => new NumberControl
+        private bool disableAnimations;
+
+        public SettingsNumberBox(bool disableAnimations = false)
+        {
+            this.disableAnimations = disableAnimations;
+        }
+
+        protected override Drawable CreateControl() => new NumberControl(disableAnimations)
         {
             RelativeSizeAxes = Axes.X,
             Margin = new MarginPadding { Top = 5 }
@@ -26,7 +35,7 @@ namespace osu.Game.Overlays.Settings
                 set => current.Current = value;
             }
 
-            public NumberControl()
+            public NumberControl(bool disableAnimations)
             {
                 AutoSizeAxes = Axes.Y;
 
@@ -34,9 +43,8 @@ namespace osu.Game.Overlays.Settings
 
                 InternalChildren = new[]
                 {
-                    numberBox = new OutlinedNumberBox
+                    numberBox = new OutlinedNumberBox(disableAnimations)
                     {
-                        Margin = new MarginPadding { Top = 5 },
                         RelativeSizeAxes = Axes.X,
                         CommitOnFocusLost = true
                     }
@@ -61,7 +69,28 @@ namespace osu.Game.Overlays.Settings
 
         private class OutlinedNumberBox : OutlinedTextBox
         {
-            protected override bool CanAddCharacter(char character) => char.IsNumber(character);
+            private bool disableAnimations;
+            public OutlinedNumberBox(bool disableAnimations)
+            {
+                this.disableAnimations = disableAnimations;
+            }
+
+            protected override bool CanAddCharacter(char character) => char.IsNumber(character) || character == '-';
+            protected override Drawable GetDrawableCharacter(char c) {
+                if (!disableAnimations)
+                    return new FallingDownContainer
+                    {
+                        AutoSizeAxes = Axes.Both,
+                        Child = new OsuSpriteText { Text = c.ToString(), Font = OsuFont.GetFont(size: CalculatedTextSize) },
+                    };
+                else
+                    return new Container
+                    {
+                        AutoSizeAxes = Axes.Both,
+                        Child = new OsuSpriteText { Text = c.ToString(), Font = OsuFont.GetFont(size: CalculatedTextSize) },
+                    };
+            }
+
         }
     }
 }

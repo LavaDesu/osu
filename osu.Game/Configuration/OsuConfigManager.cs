@@ -143,6 +143,7 @@ namespace osu.Game.Configuration
             SetDefault(OsuSetting.SeasonalBackgroundMode, SeasonalBackgroundMode.Sometimes);
 
             SetDefault(OsuSetting.DiscordRichPresence, DiscordRichPresenceMode.Full);
+            SetDefault(OsuSetting.DiscordToken, string.Empty);
 
             SetDefault(OsuSetting.EditorWaveformOpacity, 0.25f);
             SetDefault(OsuSetting.EditorHitAnimations, false);
@@ -276,5 +277,6 @@ namespace osu.Game.Configuration
         DiscordRichPresence,
         AutomaticallyDownloadWhenSpectating,
         ShowOnlineExplicitContent,
+        DiscordToken,
     }
 }

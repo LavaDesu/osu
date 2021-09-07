@@ -24,6 +24,7 @@ namespace osu.Game.Tournament.Screens.Ladder
         protected Container<DrawableTournamentMatch> MatchesContainer;
         private Container<Path> paths;
         private Container headings;
+        private Container idHeadings;
 
         protected LadderDragContainer ScrollContent;
 
@@ -60,11 +61,13 @@ namespace osu.Game.Tournament.Screens.Ladder
                         {
                             paths = new Container<Path> { RelativeSizeAxes = Axes.Both },
                             headings = new Container { RelativeSizeAxes = Axes.Both },
+                            idHeadings = CreateIDHeadings(),
                             MatchesContainer = new Container<DrawableTournamentMatch> { RelativeSizeAxes = Axes.Both },
                         }
                     },
                 }
             };
+
 
             void addMatch(TournamentMatch match) =>
                 MatchesContainer.Add(new DrawableTournamentMatch(match, this is LadderEditorScreen)
@@ -99,6 +102,13 @@ namespace osu.Game.Tournament.Screens.Ladder
             };
         }
 
+        protected virtual Container CreateIDHeadings() {
+            var container = new Container { RelativeSizeAxes = Axes.Both };
+
+            container.Hide();
+            return container;
+        }
+
         private readonly Cached layout = new Cached();
 
         protected override void Update()
@@ -118,12 +128,23 @@ namespace osu.Game.Tournament.Screens.Ladder
         {
             paths.Clear();
             headings.Clear();
+            idHeadings.Clear();
 
             int id = 1;
 
             foreach (var match in MatchesContainer.OrderBy(d => d.Y).ThenBy(d => d.X))
             {
                 match.Match.ID = id++;
+
+                idHeadings.Add(new TournamentSpriteText
+                {
+                    Font = OsuFont.Torus.With(weight: FontWeight.Bold, size: 20),
+                    Colour = TournamentGame.TEXT_COLOUR,
+                    Position = idHeadings.ToLocalSpace(match.ScreenSpaceDrawQuad.TopLeft),
+                    Margin = new MarginPadding { Bottom = 10 },
+                    Text = match.Match.ID.ToString(),
+                    Origin = Anchor.BottomCentre,
+                });
 
                 if (match.Match.Progression.Value != null)
                 {

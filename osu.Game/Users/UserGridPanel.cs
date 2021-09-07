@@ -4,6 +4,8 @@
 using osu.Framework.Allocation;
 using osu.Framework.Graphics;
 using osu.Framework.Graphics.Containers;
+using osu.Game.Graphics;
+using osu.Game.Graphics.Sprites;
 using osu.Game.Overlays.Profile.Header.Components;
 using osuTK;
 
@@ -95,6 +97,14 @@ namespace osu.Game.Users
                                             {
                                                 username.Anchor = Anchor.CentreLeft;
                                                 username.Origin = Anchor.CentreLeft;
+                                            }),
+                                        },
+                                        new Drawable[]
+                                        {
+                                            CreateDiscordUsername().With(username =>
+                                            {
+                                                username.Anchor = Anchor.CentreLeft;
+                                                username.Origin = Anchor.CentreLeft;
                                             })
                                         }
                                     }
@@ -134,6 +144,20 @@ namespace osu.Game.Users
             }
 
             return layout;
+        }
+
+        protected OsuSpriteText CreateDiscordUsername() {
+            var Text = string.Empty;
+            if (User is UserWithDiscord discordUser)
+                if (discordUser.DiscordInfo != null && discordUser.DiscordInfo.Username != null)
+                    Text = discordUser.DiscordInfo.FormattedName;
+
+            return new OsuSpriteText
+            {
+                Font = OsuFont.GetFont(size: 16, weight: FontWeight.Bold),
+                Shadow = false,
+                Text = Text,
+            };
         }
     }
 }

@@ -7,7 +7,9 @@ using osu.Framework.Allocation;
 using osu.Framework.Bindables;
 using osu.Framework.Configuration;
 using osu.Framework.Graphics;
+using osu.Framework.Logging;
 using osu.Framework.Graphics.Containers;
+using osu.Game.Configuration;
 using osu.Game.Graphics.UserInterface;
 using osu.Game.Graphics.UserInterfaceV2;
 using osu.Game.Online.API;
@@ -25,6 +27,7 @@ namespace osu.Game.Tournament.Screens.Setup
 
         private LoginOverlay loginOverlay;
         private ResolutionSelector resolution;
+        private DiscordTokenBox discordTokenBox;
 
         [Resolved]
         private MatchIPCInfo ipc { get; set; }
@@ -42,11 +45,16 @@ namespace osu.Game.Tournament.Screens.Setup
         private TournamentSceneManager sceneManager { get; set; }
 
         private Bindable<Size> windowSize;
+        private Bindable<string> discordToken;
+
+        [Resolved]
+        private DiscordAPI discordAPI { get; set; }
 
         [BackgroundDependencyLoader]
-        private void load(FrameworkConfigManager frameworkConfig)
+        private void load(FrameworkConfigManager frameworkConfig, OsuConfigManager osuConfig)
         {
             windowSize = frameworkConfig.GetBindable<Size>(FrameworkSetting.WindowedSize);
+            discordToken = osuConfig.GetBindable<string>(OsuSetting.DiscordToken);
 
             InternalChild = fillFlow = new FillFlowContainer
             {
@@ -58,6 +66,7 @@ namespace osu.Game.Tournament.Screens.Setup
             };
 
             api.LocalUser.BindValueChanged(_ => Schedule(reload));
+            discordAPI.User.BindValueChanged(_ => Schedule(reload));
             stableInfo.OnStableInfoSaved += () => Schedule(reload);
             reload();
         }
@@ -119,6 +128,15 @@ namespace osu.Game.Tournament.Screens.Setup
                     {
                         windowSize.Value = new Size((int)(height * aspect_ratio / TournamentSceneManager.STREAM_AREA_WIDTH * TournamentSceneManager.REQUIRED_WIDTH), height);
                     }
+                },
+                discordTokenBox = new DiscordTokenBox
+                {
+                    Label = "Discord token",
+                    Description = "Used for querying user data",
+                    Current = discordToken,
+                    ButtonText = "Set token",
+                    Value = discordAPI.Ready.Value ? discordAPI.User.Value.FormattedName : "Not logged in",
+                    Failing = discordAPI.Ready.Value != true
                 },
             };
         }

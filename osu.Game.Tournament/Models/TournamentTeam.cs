@@ -5,6 +5,7 @@ using System;
 using System.Linq;
 using Newtonsoft.Json;
 using osu.Framework.Bindables;
+using osu.Game.Online.API;
 using osu.Game.Users;
 
 namespace osu.Game.Tournament.Models
@@ -57,7 +58,7 @@ namespace osu.Game.Tournament.Models
         };
 
         [JsonProperty]
-        public BindableList<User> Players { get; set; } = new BindableList<User>();
+        public BindableList<UserWithDiscord> Players { get; set; } = new BindableList<UserWithDiscord>();
 
         public TournamentTeam()
         {

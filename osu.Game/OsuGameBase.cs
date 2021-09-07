@@ -105,6 +105,8 @@ namespace osu.Game
 
         protected IAPIProvider API { get; set; }
 
+        protected DiscordAPI DiscordAPI { get; set; }
+
         protected Storage Storage { get; set; }
 
         protected Bindable<WorkingBeatmap> Beatmap { get; private set; } // cached via load() method
@@ -253,6 +255,7 @@ namespace osu.Game
             MessageFormatter.WebsiteRootUrl = endpoints.WebsiteRootUrl;
 
             dependencies.CacheAs(API ??= new APIAccess(LocalConfig, endpoints, VersionHash));
+            dependencies.CacheAs(DiscordAPI ??= new DiscordAPI(LocalConfig));
 
             dependencies.CacheAs(spectatorClient = new OnlineSpectatorClient(endpoints));
             dependencies.CacheAs(multiplayerClient = new OnlineMultiplayerClient(endpoints));

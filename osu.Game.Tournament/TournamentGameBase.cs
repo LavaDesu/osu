@@ -7,11 +7,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using osu.Framework.Allocation;
+using osu.Framework.Bindables;
 using osu.Framework.Graphics.Textures;
 using osu.Framework.Input;
 using osu.Framework.IO.Stores;
 using osu.Framework.Platform;
 using osu.Game.Beatmaps;
+using osu.Game.Online.API;
 using osu.Game.Online.API.Requests;
 using osu.Game.Tournament.IO;
 using osu.Game.Tournament.IPC;
@@ -212,6 +214,32 @@ namespace osu.Game.Tournament
             }
 
             return addedInfo;
+        }
+
+        public bool PopulateDiscordUser(UserWithDiscord user, string token)
+        {
+            using (var req = new GetDiscordUserRequest(user.DiscordInfo.Id) { Token = token })
+            {
+                try
+                {
+                    req.Perform();
+
+                    var res = req.ResponseObject;
+
+                    user.DiscordInfo.Id = res.Id;
+                    user.DiscordInfo.Username = res.Username;
+                    user.DiscordInfo.Discriminator = res.Discriminator;
+                    user.DiscordInfo.Avatar = res.Avatar;
+                    user.DiscordInfo.Banner = res.Banner;
+                }
+                catch
+                {
+                    user.DiscordInfo.Id = "1";
+                    return false;
+                }
+
+                return true;
+            }
         }
 
         public void PopulateUser(User user, Action success = null, Action failure = null, bool immediate = false)

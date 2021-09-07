@@ -46,7 +46,7 @@ namespace osu.Game.Tournament.Screens.Editors
                 {
                     new Box
                     {
-                        Colour = OsuColour.Gray(0.1f),
+                        Colour = Colour4.Black,
                         RelativeSizeAxes = Axes.Both,
                     },
                     new FillFlowContainer

@@ -47,7 +47,7 @@ namespace osu.Game.Tournament.Screens.Editors
                 new Box
                 {
                     RelativeSizeAxes = Axes.Both,
-                    Colour = OsuColour.Gray(0.2f),
+                    Colour = Colour4.Black
                 },
                 new OsuScrollContainer
                 {

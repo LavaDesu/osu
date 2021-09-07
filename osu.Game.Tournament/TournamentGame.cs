@@ -75,7 +75,7 @@ namespace osu.Game.Tournament
                     {
                         new Box
                         {
-                            Colour = OsuColour.Gray(0.2f),
+                            Colour = Colour4.Transparent,
                             RelativeSizeAxes = Axes.Both,
                         },
                         new TourneyButton

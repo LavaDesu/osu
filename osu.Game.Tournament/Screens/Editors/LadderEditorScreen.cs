@@ -36,7 +36,7 @@ namespace osu.Game.Tournament.Screens.Editors
             Content.Add(new LadderEditorSettings
             {
                 Anchor = Anchor.TopRight,
-                Origin = Anchor.TopRight,
+                Origin = Anchor.TopCentre,
                 Margin = new MarginPadding(5)
             });
 
@@ -45,6 +45,8 @@ namespace osu.Game.Tournament.Screens.Editors
             LadderInfo.Matches.CollectionChanged += (_, __) => updateMessage();
             updateMessage();
         }
+
+        protected override Container CreateIDHeadings() => new Container { RelativeSizeAxes = Axes.Both };
 
         private void updateMessage()
         {

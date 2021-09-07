@@ -3,12 +3,14 @@
 
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Drawing;
 using System.Linq;
 using osu.Framework.Allocation;
 using osu.Framework.Bindables;
 using osu.Framework.Extensions.IEnumerableExtensions;
 using osu.Framework.Graphics;
 using osu.Framework.Input.Events;
+using osu.Game.Graphics.Sprites;
 using osu.Game.Overlays.Settings;
 using osu.Game.Screens.Play.PlayerSettings;
 using osu.Game.Tournament.Components;
@@ -20,11 +22,18 @@ namespace osu.Game.Tournament.Screens.Ladder.Components
     {
         private const int padding = 10;
 
+        private OsuSpriteText id;
         private SettingsDropdown<TournamentRound> roundDropdown;
         private PlayerCheckbox losersCheckbox;
         private DateTextBox dateTimeBox;
         private SettingsTeamDropdown team1Dropdown;
         private SettingsTeamDropdown team2Dropdown;
+        private SettingsNumberBox positionX;
+        private SettingsNumberBox positionY;
+
+        private Bindable<Point> currentPosition = new Bindable<Point>();
+        private Bindable<int?> currentPosX = new Bindable<int?>(0);
+        private Bindable<int?> currentPosY = new Bindable<int?>(0);
 
         [Resolved]
         private LadderEditorInfo editorInfo { get; set; }
@@ -42,21 +51,38 @@ namespace osu.Game.Tournament.Screens.Ladder.Components
         {
             Children = new Drawable[]
             {
+                id = new OsuSpriteText { Text = "ID", Margin = new MarginPadding { Left = 10 } },
                 team1Dropdown = new SettingsTeamDropdown(ladderInfo.Teams) { LabelText = "Team 1" },
                 team2Dropdown = new SettingsTeamDropdown(ladderInfo.Teams) { LabelText = "Team 2" },
                 roundDropdown = new SettingsRoundDropdown(ladderInfo.Rounds) { LabelText = "Round" },
                 losersCheckbox = new PlayerCheckbox { LabelText = "Losers Bracket" },
                 dateTimeBox = new DateTextBox { LabelText = "Match Time" },
+                positionX = new SettingsNumberBox(true) { LabelText = "X Position", Current = currentPosX },
+                positionY = new SettingsNumberBox(true) { LabelText = "Y Position", Current = currentPosY },
             };
+
+            currentPosition.BindValueChanged(p =>
+            {
+                currentPosX.Value = p.NewValue.X;
+                currentPosY.Value = p.NewValue.Y;
+            });
+            currentPosX.BindValueChanged(e => currentPosition.Value = new Point(e.NewValue.Value, currentPosition.Value.Y));
+            currentPosY.BindValueChanged(e => currentPosition.Value = new Point(currentPosition.Value.X, e.NewValue.Value));
 
             editorInfo.Selected.ValueChanged += selection =>
             {
+                id.Text = "ID " + selection.NewValue?.ID.ToString();
                 roundDropdown.Current = selection.NewValue?.Round;
                 losersCheckbox.Current = selection.NewValue?.Losers;
                 dateTimeBox.Current = selection.NewValue?.Date;
 
                 team1Dropdown.Current = selection.NewValue?.Team1;
                 team2Dropdown.Current = selection.NewValue?.Team2;
+
+                if (selection.OldValue != null) {
+                    currentPosition.UnbindFrom(selection.OldValue.Position);
+                }
+                currentPosition.BindTo(selection.NewValue.Position);
             };
 
             roundDropdown.Current.ValueChanged += round =>
