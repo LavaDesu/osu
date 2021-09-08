@@ -40,13 +40,19 @@ namespace osu.Game.Tournament.Components
                                 {
                                     Direction = FillDirection.Vertical,
                                     AutoSizeAxes = Axes.Both,
-                                    ChildrenEnumerable = team?.Players.Select(createPlayerText).Take(5) ?? Enumerable.Empty<Drawable>()
+                                    ChildrenEnumerable = team?.Players
+                                        .OrderBy(p => p.Statistics?.GlobalRank ?? 10000000000)
+                                        .Select(createPlayerText)
+                                        .Take(6) ?? Enumerable.Empty<Drawable>()
                                 },
                                 new FillFlowContainer
                                 {
                                     Direction = FillDirection.Vertical,
                                     AutoSizeAxes = Axes.Both,
-                                    ChildrenEnumerable = team?.Players.Select(createPlayerText).Skip(5) ?? Enumerable.Empty<Drawable>()
+                                    ChildrenEnumerable = team?.Players
+                                        .OrderBy(p => p.Statistics?.GlobalRank ?? 10000000000)
+                                        .Select(createPlayerText)
+                                        .Skip(6) ?? Enumerable.Empty<Drawable>()
                                 },
                             }
                         },

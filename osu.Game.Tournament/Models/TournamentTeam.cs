@@ -6,6 +6,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using osu.Framework.Bindables;
 using osu.Game.Online.API;
+using osu.Game.Tournament.Screens.Editors;
 using osu.Game.Users;
 
 namespace osu.Game.Tournament.Models

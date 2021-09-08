@@ -6,6 +6,11 @@
   outputs = { self, nixpkgs, flake-utils }:
     flake-utils.lib.eachDefaultSystem(system:
     let
+      version = "2021.828.0-lava2";
+      suffix = "-lava2";
+
+      baseBuild = "-f net5.0 -v minimal /property:Version=${version} osu.Desktop -- $@";
+        
       pkgs = nixpkgs.legacyPackages.${system};
       deps = with pkgs; [
         openssl icu ffmpeg_4 alsa-lib SDL2 lttng-ust numactl
@@ -17,11 +22,18 @@
       '';
       buildScript = pkgs.writeScript "osu-build" ''
         rm -f osu.Desktop/bin/Debug/net5.0/linux-x64/libSDL2.so
-        dotnet build -c Debug -f net5.0 -r linux-x64 osu.Desktop -v minimal -- $@ && ${fixSdl}
+        dotnet build -c Debug -r linux-x64 ${baseBuild} && ${fixSdl}
       '';
       buildReleaseScript = pkgs.writeScript "osu-build-rel" ''
         rm -f osu.Desktop/bin/Release/net5.0/linux-x64/libSDL2.so
-        dotnet build -c Release -f net5.0 -r linux-x64 osu.Desktop -v minimal -- $@ && ${fixSdl}
+        dotnet build -c Release -r linux-x64 ${baseBuild} && ${fixSdl}
+      '';
+      publishScript = pkgs.writeScript "osu-publish" ''
+        rm -f osu.Desktop/bin/Release/net5.0/linux-x64/libSDL2.so
+        dotnet publish -c Release -r linux-x64 --self-contained false ${baseBuild} && ${fixSdl}
+      '';
+      publishWinScript = pkgs.writeScript "osu-publish-win" ''
+        dotnet publish -c Release -r win-x64 --self-contained false -o build-win ${baseBuild}
       '';
       runScript = pkgs.writeScript "osu-run" ''
         ${buildScript} && dotnet run --no-build -c Debug -f net5.0 -r linux-x64 -p osu.Desktop -v minimal -- $@
@@ -39,6 +51,8 @@
           cp ${fixSdl} $out/osu-fixsdl
           cp ${buildScript} $out/osu-build
           cp ${buildReleaseScript} $out/osu-build-rel
+          cp ${publishScript} $out/osu-publish
+          cp ${publishWinScript} $out/osu-publish-win
           cp ${runScript} $out/osu-run
           cp ${runReleaseScript} $out/osu-run-rel
         '';

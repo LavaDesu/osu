@@ -55,7 +55,7 @@ namespace osu.Game.Tournament.Screens.Ladder.Components
                 team1Dropdown = new SettingsTeamDropdown(ladderInfo.Teams) { LabelText = "Team 1" },
                 team2Dropdown = new SettingsTeamDropdown(ladderInfo.Teams) { LabelText = "Team 2" },
                 roundDropdown = new SettingsRoundDropdown(ladderInfo.Rounds) { LabelText = "Round" },
-                losersCheckbox = new PlayerCheckbox { LabelText = "Losers Bracket" },
+                losersCheckbox = new PlayerCheckbox { LabelText = "Losers Bracket", Margin = new MarginPadding { Left = 15 } },
                 dateTimeBox = new DateTextBox { LabelText = "Match Time" },
                 positionX = new SettingsNumberBox(true) { LabelText = "X Position", Current = currentPosX },
                 positionY = new SettingsNumberBox(true) { LabelText = "Y Position", Current = currentPosY },

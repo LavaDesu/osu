@@ -1,6 +1,7 @@
 // Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
+using System.Linq;
 using osu.Framework.Allocation;
 using osu.Framework.Bindables;
 using osu.Framework.Graphics;
@@ -11,6 +12,7 @@ using osu.Framework.Graphics.Textures;
 using osu.Framework.Platform;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Sprites;
+using osu.Game.Screens.Play.PlayerSettings;
 using osu.Game.Tournament.Components;
 using osu.Game.Tournament.Models;
 using osu.Game.Tournament.Screens.Ladder.Components;
@@ -23,6 +25,8 @@ namespace osu.Game.Tournament.Screens.TeamIntro
         private Container mainContainer;
 
         private readonly Bindable<TournamentTeam> currentTeam = new Bindable<TournamentTeam>();
+        internal readonly BindableBool showSeed = new BindableBool(true);
+        internal readonly BindableBool showLastPlacing = new BindableBool(true);
 
         [BackgroundDependencyLoader]
         private void load(Storage storage)
@@ -60,7 +64,17 @@ namespace osu.Game.Tournament.Screens.TeamIntro
                         {
                             LabelText = "Show specific team",
                             Current = currentTeam,
-                        }
+                        },
+                        new PlayerCheckbox
+                        {
+                            LabelText = "Show seed",
+                            Current = showSeed,
+                        },
+                        new PlayerCheckbox
+                        {
+                            LabelText = "Show last year's placing",
+                            Current = showLastPlacing
+                        },
                     }
                 }
             };
@@ -93,7 +107,7 @@ namespace osu.Game.Tournament.Screens.TeamIntro
         {
             mainContainer.Children = new Drawable[]
             {
-                new LeftInfo(team) { Position = new Vector2(55, 150), },
+                new LeftInfo(team, showSeed, showLastPlacing) { Position = new Vector2(55, 150), },
                 new RightInfo(team) { Position = new Vector2(500, 150), },
             };
         }
@@ -229,9 +243,11 @@ namespace osu.Game.Tournament.Screens.TeamIntro
 
         private class LeftInfo : CompositeDrawable
         {
-            public LeftInfo(TournamentTeam team)
+            public LeftInfo(TournamentTeam team, BindableBool showSeed, BindableBool showLastPlacing)
             {
                 FillFlowContainer fill;
+                Drawable seed;
+                Drawable lastPlacing;
 
                 Width = 200;
 
@@ -248,14 +264,27 @@ namespace osu.Game.Tournament.Screens.TeamIntro
                         {
                             new TeamDisplay(team) { Margin = new MarginPadding { Bottom = 30 } },
                             new RowDisplay("Average Rank:", $"#{team.AverageRank:#,0}"),
-                            new RowDisplay("Seed:", team.Seed.Value),
-                            new RowDisplay("Last year's placing:", team.LastYearPlacing.Value > 0 ? $"#{team.LastYearPlacing:#,0}" : "0"),
+                            seed = new RowDisplay("Seed:", team.Seed.Value),
+                            lastPlacing = new RowDisplay("Last year's placing:", team.LastYearPlacing.Value > 0 ? $"#{team.LastYearPlacing:#,0}" : "0"),
                             new Container { Margin = new MarginPadding { Bottom = 30 } },
                         }
                     },
                 };
 
-                foreach (var p in team.Players)
+                showLastPlacing.BindValueChanged(e => {
+                    if (e.NewValue)
+                        lastPlacing.Show();
+                    else
+                        lastPlacing.Hide();
+                }, true);
+                showSeed.BindValueChanged(e => {
+                    if (e.NewValue)
+                        seed.Show();
+                    else
+                        seed.Hide();
+                }, true);
+
+                foreach (var p in team.Players.OrderBy(p => p.Statistics?.GlobalRank ?? 10000000000))
                     fill.Add(new RowDisplay(p.Username, p.Statistics?.GlobalRank?.ToString("\\##,0") ?? "-"));
             }
 
@@ -294,7 +323,7 @@ namespace osu.Game.Tournament.Screens.TeamIntro
                     AutoSizeAxes = Axes.Both;
 
                     Flag.RelativeSizeAxes = Axes.None;
-                    Flag.Scale = new Vector2(1.2f);
+                    Flag.Scale = new Vector2(1.8f);
 
                     InternalChild = new FillFlowContainer
                     {

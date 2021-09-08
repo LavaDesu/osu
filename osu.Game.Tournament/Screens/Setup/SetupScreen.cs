@@ -1,8 +1,10 @@
 // Copyright (c) ppy Pty Ltd <contact@ppy.sh>. Licensed under the MIT Licence.
 // See the LICENCE file in the repository root for full licence text.
 
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Reflection;
 using osu.Framework.Allocation;
 using osu.Framework.Bindables;
 using osu.Framework.Configuration;
@@ -10,6 +12,7 @@ using osu.Framework.Graphics;
 using osu.Framework.Logging;
 using osu.Framework.Graphics.Containers;
 using osu.Game.Configuration;
+using osu.Game.Graphics;
 using osu.Game.Graphics.UserInterface;
 using osu.Game.Graphics.UserInterfaceV2;
 using osu.Game.Online.API;
@@ -50,19 +53,33 @@ namespace osu.Game.Tournament.Screens.Setup
         [Resolved]
         private DiscordAPI discordAPI { get; set; }
 
+        [Resolved]
+        private OsuGameBase osuBase { get; set; }
+
         [BackgroundDependencyLoader]
         private void load(FrameworkConfigManager frameworkConfig, OsuConfigManager osuConfig)
         {
             windowSize = frameworkConfig.GetBindable<Size>(FrameworkSetting.WindowedSize);
             discordToken = osuConfig.GetBindable<string>(OsuSetting.DiscordToken);
 
-            InternalChild = fillFlow = new FillFlowContainer
+            InternalChildren = new Drawable[]
             {
-                RelativeSizeAxes = Axes.X,
-                AutoSizeAxes = Axes.Y,
-                Direction = FillDirection.Vertical,
-                Padding = new MarginPadding(10),
-                Spacing = new Vector2(10),
+                fillFlow = new FillFlowContainer
+                {
+                    RelativeSizeAxes = Axes.X,
+                    AutoSizeAxes = Axes.Y,
+                    Direction = FillDirection.Vertical,
+                    Padding = new MarginPadding(10),
+                    Spacing = new Vector2(10),
+                },
+                new TournamentSpriteText
+                {
+                    Text = Assembly.GetEntryAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>().InformationalVersion,
+                    Colour = OsuColour.Gray(0.6f),
+                    Anchor = Anchor.BottomLeft,
+                    Origin = Anchor.BottomLeft,
+                    Margin = new MarginPadding { Left = 20, Bottom = 5 }
+                },
             };
 
             api.LocalUser.BindValueChanged(_ => Schedule(reload));

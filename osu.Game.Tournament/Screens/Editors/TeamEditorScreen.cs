@@ -130,7 +130,8 @@ namespace osu.Game.Tournament.Screens.Editors
                             {
                                 LabelText = "Last Year Placement",
                                 Width = 0.33f,
-                                Current = Model.LastYearPlacing
+                                Current = Model.LastYearPlacing,
+                                Margin = new MarginPadding { Top = 10 }
                             },
                             new SettingsButton
                             {
@@ -193,7 +194,11 @@ namespace osu.Game.Tournament.Screens.Editors
                         RelativeSizeAxes = Axes.X,
                         AutoSizeAxes = Axes.Y,
                         Direction = FillDirection.Vertical,
-                        ChildrenEnumerable = team.Players.Select(p => new PlayerRow(team, p))
+                        ChildrenEnumerable = team.Players
+                            .OrderBy(p =>
+                                p.Statistics?.GlobalRank ?? 10000000000
+                            )
+                            .Select(p => new PlayerRow(team, p))
                     };
                 }
 
@@ -227,7 +232,6 @@ namespace osu.Game.Tournament.Screens.Editors
                     {
                         this.user = user;
 
-                        userId.Disabled = false;
                         discordId.Disabled = false;
 
                         Margin = new MarginPadding(10);
@@ -300,7 +304,6 @@ namespace osu.Game.Tournament.Screens.Editors
 
                         discordId.Value = user.DiscordInfo.Id;
 
-                        API.LocalUser.BindValueChanged(e => userId.Disabled = e.NewValue.Id <= 1, true);
                         discordAPI.Ready.BindValueChanged(e => discordId.Disabled = !e.NewValue, true);
 
                         discordId.BindValueChanged(id =>

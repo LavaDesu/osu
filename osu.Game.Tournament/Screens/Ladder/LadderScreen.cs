@@ -61,8 +61,8 @@ namespace osu.Game.Tournament.Screens.Ladder
                         {
                             paths = new Container<Path> { RelativeSizeAxes = Axes.Both },
                             headings = new Container { RelativeSizeAxes = Axes.Both },
-                            idHeadings = CreateIDHeadings(),
                             MatchesContainer = new Container<DrawableTournamentMatch> { RelativeSizeAxes = Axes.Both },
+                            idHeadings = CreateIDHeadings(),
                         }
                     },
                 }
