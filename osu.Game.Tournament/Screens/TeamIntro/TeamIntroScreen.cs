@@ -44,36 +44,44 @@ namespace osu.Game.Tournament.Screens.TeamIntro
             if (match.NewValue == null)
                 return;
 
-            const float y_flag_offset = 260;
-            const float flag_scale = 3.5f;
-
-            const float y_offset = 460;
-
             mainContainer.Children = new Drawable[]
             {
                 new RoundDisplay(match.NewValue)
                 {
-                    Position = new Vector2(100, 100)
+                    Anchor = Anchor.TopCentre,
+                    Origin = Anchor.TopCentre,
                 },
-                new DrawableTeamFlag(match.NewValue.Team1.Value)
-                {
-                    Position = new Vector2(165, y_flag_offset),
-                    Scale = new Vector2(flag_scale),
-                },
-                new DrawableTeamWithPlayers(match.NewValue.Team1.Value, TeamColour.Red)
-                {
-                    Position = new Vector2(165, y_offset),
-                },
-                new DrawableTeamFlag(match.NewValue.Team2.Value)
-                {
-                    Position = new Vector2(740, y_flag_offset),
-                    Scale = new Vector2(flag_scale),
-                },
-                new DrawableTeamWithPlayers(match.NewValue.Team2.Value, TeamColour.Blue)
-                {
-                    Position = new Vector2(740, y_offset),
-                },
+                CreateTeam(match.NewValue.Team1.Value, TeamColour.Red),
+                CreateTeam(match.NewValue.Team2.Value, TeamColour.Blue),
             };
         }
+
+        const float y_offset = 170;
+        const float x_offset = 230;
+        const float flag_offset = 70;
+        const float flag_scale = 2.5f;
+
+        protected FillFlowContainer CreateTeam(TournamentTeam team, TeamColour colour) => new FillFlowContainer
+        {
+            Margin = new MarginPadding { Top = y_offset, Left = x_offset, Right = x_offset },
+            Anchor = colour == TeamColour.Red ? Anchor.TopLeft : Anchor.TopRight,
+            Origin = colour == TeamColour.Red ? Anchor.TopLeft : Anchor.TopRight,
+            AutoSizeAxes = Axes.Both,
+            Direction = FillDirection.Vertical,
+            Spacing = new Vector2(flag_offset),
+
+            Children = new Drawable[]
+            {
+                new DrawableTeamFlag(team)
+                {
+                    Anchor = Anchor.TopCentre,
+                    Origin = Anchor.TopCentre,
+                    Scale = new Vector2(flag_scale),
+                },
+                new DrawableTeamWithPlayers(team, colour)
+                {
+                },
+            }
+        };
     }
 }

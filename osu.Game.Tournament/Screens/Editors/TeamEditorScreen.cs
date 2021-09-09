@@ -233,6 +233,7 @@ namespace osu.Game.Tournament.Screens.Editors
                         this.user = user;
 
                         discordId.Disabled = false;
+                        userId.Disabled = false;
 
                         Margin = new MarginPadding(10);
 
@@ -304,7 +305,8 @@ namespace osu.Game.Tournament.Screens.Editors
 
                         discordId.Value = user.DiscordInfo.Id;
 
-                        discordAPI.Ready.BindValueChanged(e => discordId.Disabled = !e.NewValue, true);
+                        ScheduleAfterChildren(() => API.LocalUser.BindValueChanged(e => userId.Disabled = e.NewValue.Id <= 1, true));
+                        ScheduleAfterChildren(() => discordAPI.Ready.BindValueChanged(e => discordId.Disabled = !e.NewValue, true));
 
                         discordId.BindValueChanged(id =>
                         {

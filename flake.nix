@@ -6,8 +6,7 @@
   outputs = { self, nixpkgs, flake-utils }:
     flake-utils.lib.eachDefaultSystem(system:
     let
-      version = "2021.828.0-lava2";
-      suffix = "-lava2";
+      version = "2021.828.0-lava3";
 
       baseBuild = "-f net5.0 -v minimal /property:Version=${version} osu.Desktop -- $@";
         

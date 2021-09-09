@@ -31,10 +31,11 @@ namespace osu.Game.Tournament.Components
                         },
                         new TournamentSpriteText
                         {
-                            Anchor = Anchor.TopLeft,
-                            Origin = Anchor.TopLeft,
+                            Margin = new MarginPadding { Top = 35 },
+                            Anchor = Anchor.TopCentre,
+                            Origin = Anchor.TopCentre,
                             Text = match.Round.Value?.Name.Value ?? "Unknown Round",
-                            Font = OsuFont.Torus.With(size: 26, weight: FontWeight.SemiBold)
+                            Font = OsuFont.Torus.With(size: 31, weight: FontWeight.SemiBold)
                         },
                     }
                 }

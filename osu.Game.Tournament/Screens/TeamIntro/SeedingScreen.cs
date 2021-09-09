@@ -12,6 +12,7 @@ using osu.Framework.Graphics.Textures;
 using osu.Framework.Platform;
 using osu.Game.Graphics;
 using osu.Game.Graphics.Sprites;
+using osu.Game.Overlays.Settings;
 using osu.Game.Screens.Play.PlayerSettings;
 using osu.Game.Tournament.Components;
 using osu.Game.Tournament.Models;
@@ -29,9 +30,12 @@ namespace osu.Game.Tournament.Screens.TeamIntro
         internal readonly BindableBool showLastPlacing = new BindableBool(true);
 
         [BackgroundDependencyLoader]
-        private void load(Storage storage)
+        private void load(Storage storage, LadderInfo ladder)
         {
             RelativeSizeAxes = Axes.Both;
+
+            showSeed.BindTo(ladder.ShowSeed);
+            showLastPlacing.BindTo(ladder.ShowLastPlacing);
 
             InternalChildren = new Drawable[]
             {
@@ -65,14 +69,14 @@ namespace osu.Game.Tournament.Screens.TeamIntro
                             LabelText = "Show specific team",
                             Current = currentTeam,
                         },
-                        new PlayerCheckbox
+                        new SettingsCheckbox
                         {
                             LabelText = "Show seed",
                             Current = showSeed,
                         },
-                        new PlayerCheckbox
+                        new SettingsCheckbox
                         {
-                            LabelText = "Show last year's placing",
+                            LabelText = "Show last placing",
                             Current = showLastPlacing
                         },
                     }

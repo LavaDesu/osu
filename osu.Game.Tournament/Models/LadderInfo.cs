@@ -27,6 +27,9 @@ namespace osu.Game.Tournament.Models
         [JsonIgnore] // updated manually in TournamentGameBase
         public Bindable<TournamentMatch> CurrentMatch = new Bindable<TournamentMatch>();
 
+        public Bindable<bool> ShowSeed = new Bindable<bool>(true);
+        public Bindable<bool> ShowLastPlacing = new Bindable<bool>(true);
+
         public Bindable<int> ChromaKeyWidth = new BindableInt(1024)
         {
             MinValue = 640,

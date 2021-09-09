@@ -60,6 +60,7 @@ namespace osu.Game.Overlays.Settings
                     current.Value = value;
                 });
 
+                Current.BindDisabledChanged(e => numberBox.Current.Disabled = e);
                 Current.BindValueChanged(e =>
                 {
                     numberBox.Current.Value = e.NewValue?.ToString();

@@ -165,6 +165,8 @@ namespace osu.Game.Tournament.Screens.Editors
                         Masking = true;
                         CornerRadius = 5;
 
+                        beatmapId.Disabled = false;
+
                         InternalChildren = new Drawable[]
                         {
                             new Box
@@ -221,6 +223,8 @@ namespace osu.Game.Tournament.Screens.Editors
                     private void load(RulesetStore rulesets)
                     {
                         beatmapId.Value = Model.ID;
+                        ScheduleAfterChildren(() => API.LocalUser.BindValueChanged(e => beatmapId.Disabled = e.NewValue.Id <= 1, true));
+
                         beatmapId.BindValueChanged(id =>
                         {
                             Model.ID = id.NewValue ?? 0;

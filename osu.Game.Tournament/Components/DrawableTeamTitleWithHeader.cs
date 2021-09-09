@@ -13,6 +13,7 @@ namespace osu.Game.Tournament.Components
         public DrawableTeamTitleWithHeader(TournamentTeam team, TeamColour colour)
         {
             AutoSizeAxes = Axes.Both;
+            var rightAligned = colour == TeamColour.Blue;
 
             InternalChild = new FillFlowContainer
             {
@@ -21,7 +22,11 @@ namespace osu.Game.Tournament.Components
                 Spacing = new Vector2(0, 10),
                 Children = new Drawable[]
                 {
-                    new DrawableTeamHeader(colour),
+                    new DrawableTeamHeader(colour)
+                    {
+                        Anchor = rightAligned ? Anchor.TopRight : Anchor.TopLeft,
+                        Origin = rightAligned ? Anchor.TopRight : Anchor.TopLeft,
+                    },
                     new DrawableTeamTitle(team),
                 }
             };
