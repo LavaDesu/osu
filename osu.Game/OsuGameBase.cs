@@ -113,6 +113,8 @@ namespace osu.Game
 
         protected Storage Storage { get; set; }
 
+        protected LargeTextureStore LargeStore { get; set; }
+
         protected Bindable<WorkingBeatmap> Beatmap { get; private set; } // cached via load() method
 
         [Cached]
@@ -201,9 +203,9 @@ namespace osu.Game
 
             dependencies.CacheAs(Storage);
 
-            var largeStore = new LargeTextureStore(Host.CreateTextureLoaderStore(new NamespacedResourceStore<byte[]>(Resources, @"Textures")));
-            largeStore.AddStore(Host.CreateTextureLoaderStore(new OnlineStore()));
-            dependencies.Cache(largeStore);
+            LargeStore = new LargeTextureStore(Host.CreateTextureLoaderStore(new NamespacedResourceStore<byte[]>(Resources, @"Textures")));
+            LargeStore.AddStore(Host.CreateTextureLoaderStore(new OnlineStore()));
+            dependencies.Cache(LargeStore);
 
             dependencies.CacheAs(this);
             dependencies.CacheAs(LocalConfig);

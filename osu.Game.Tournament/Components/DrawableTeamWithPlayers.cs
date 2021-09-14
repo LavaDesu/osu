@@ -17,6 +17,8 @@ namespace osu.Game.Tournament.Components
         public DrawableTeamWithPlayers(TournamentTeam team, TeamColour colour)
         {
             AutoSizeAxes = Axes.Both;
+            Anchor = colour == TeamColour.Blue ? Anchor.TopRight : Anchor.TopLeft;
+            Origin = colour == TeamColour.Blue ? Anchor.TopRight : Anchor.TopLeft;
 
             InternalChildren = new Drawable[]
             {

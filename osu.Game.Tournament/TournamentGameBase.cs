@@ -53,6 +53,8 @@ namespace osu.Game.Tournament
 
             Textures.AddStore(new TextureLoaderStore(new StorageBackedResourceStore(storage)));
 
+            LargeStore.AddStore(new TextureLoaderStore(new StorageBackedResourceStore(storage)));
+
             dependencies.CacheAs(new StableInfo(storage));
 
             Task.Run(readBracket);

@@ -57,30 +57,34 @@ namespace osu.Game.Tournament.Screens.TeamIntro
         }
 
         const float y_offset = 170;
-        const float x_offset = 230;
-        const float flag_offset = 70;
+        const float x_offset = 280;
+        const float flag_x_offset = 30;
+        const float flag_y_offset = 70;
         const float flag_scale = 2.5f;
 
         protected FillFlowContainer CreateTeam(TournamentTeam team, TeamColour colour) => new FillFlowContainer
         {
-            Margin = new MarginPadding { Top = y_offset, Left = x_offset, Right = x_offset },
+            Margin = colour == TeamColour.Red
+                ? new MarginPadding { Top = y_offset, Left = x_offset }
+                : new MarginPadding { Top = y_offset, Right = x_offset },
             Anchor = colour == TeamColour.Red ? Anchor.TopLeft : Anchor.TopRight,
             Origin = colour == TeamColour.Red ? Anchor.TopLeft : Anchor.TopRight,
             AutoSizeAxes = Axes.Both,
             Direction = FillDirection.Vertical,
-            Spacing = new Vector2(flag_offset),
+            Spacing = new Vector2(flag_y_offset),
 
             Children = new Drawable[]
             {
                 new DrawableTeamFlag(team)
                 {
-                    Anchor = Anchor.TopCentre,
-                    Origin = Anchor.TopCentre,
+                    Anchor = colour == TeamColour.Red ? Anchor.TopLeft : Anchor.TopRight,
+                    Origin = colour == TeamColour.Red ? Anchor.TopLeft : Anchor.TopRight,
+                    Margin = colour == TeamColour.Red
+                        ? new MarginPadding { Left = flag_x_offset }
+                        : new MarginPadding { Right = flag_x_offset },
                     Scale = new Vector2(flag_scale),
                 },
                 new DrawableTeamWithPlayers(team, colour)
-                {
-                },
             }
         };
     }

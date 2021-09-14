@@ -223,7 +223,10 @@ namespace osu.Game.Tournament.Screens.Editors
                     private void load(RulesetStore rulesets)
                     {
                         beatmapId.Value = Model.ID;
-                        ScheduleAfterChildren(() => API.LocalUser.BindValueChanged(e => beatmapId.Disabled = e.NewValue.Id <= 1, true));
+                        ScheduleAfterChildren(() => API.LocalUser.BindValueChanged(e =>
+                            beatmapId.Disabled = Model.BeatmapInfo.Status == BeatmapSetOnlineStatus.None
+                                              || e.NewValue.Id <= 1
+                        , true));
 
                         beatmapId.BindValueChanged(id =>
                         {
